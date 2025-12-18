@@ -1,20 +1,17 @@
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+FROM python:3.13-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
 
-ENV UV_COMPILE_BYTECODE=1
-
-ENV UV_PROJECT_ENVIRONMENT="/uv-venv"
-
+# Install dependencies
+# --frozen: strict sync from uv.lock
+# --no-dev: excludes test/lint dependencies
 COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 
-RUN uv sync --frozen --no-dev --no-install-project
+COPY app ./app
 
-COPY . .
+ENV PATH="/app/.venv/bin:$PATH"
 
-ENV PATH="/uv-venv/bin:$PATH"
-
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-USER appuser
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]
