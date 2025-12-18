@@ -17,4 +17,4 @@ async def test_provider_not_found(client: AsyncClient) -> None:
 
     response = await client.post("/generate", json=payload)
 
-    assert response.status_code == 400
+    assert response.status_code == 422

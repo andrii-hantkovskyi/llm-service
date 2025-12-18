@@ -11,4 +11,4 @@ class GenerationService:
 
         llm_data = await provider.generate_response(request.prompt)
 
-        return GenerationResponse(provider=request.provider, result=llm_data)
+        return GenerationResponse(provider=request.provider.value, result=llm_data)

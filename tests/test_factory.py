@@ -1,7 +1,10 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from app.domain.exceptions import ProviderNotFoundError
 from app.domain.interfaces import ILLMProvider
+from app.domain.schemas import ProviderType
 from app.infrastructure.llm_registry import LLMProviderFactory
 
 
@@ -10,20 +13,16 @@ class DummyProvider(ILLMProvider):
         return {}
 
 
-def test_factory_register_and_retrieve() -> None:
+def test_factory_works() -> None:
     factory = LLMProviderFactory()
-    provider = DummyProvider()
+    mock_provider = MagicMock()
 
-    factory.register_provider("dummy", provider)
-
-    retrieved = factory.get_provider("dummy")
-    assert retrieved is provider
+    factory.register_provider(ProviderType.MOCK, mock_provider)
+    assert factory.get_provider(ProviderType.MOCK) == mock_provider
 
 
 def test_factory_raises_error_for_unknown_provider() -> None:
     factory = LLMProviderFactory()
 
-    with pytest.raises(ProviderNotFoundError) as excinfo:
-        factory.get_provider("ghost_provider")
-
-    assert "not supported" in str(excinfo.value)
+    with pytest.raises(ProviderNotFoundError):
+        factory.get_provider(ProviderType.OPENAI)

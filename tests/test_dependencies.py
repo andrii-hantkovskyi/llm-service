@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 from app.dependencies import llm_factory, setup_providers
+from app.domain.schemas import ProviderType
 from app.infrastructure.providers.openai import OpenAIProvider
 
 
@@ -10,7 +11,7 @@ def test_setup_providers_registers_mock() -> None:
 
     setup_providers()
 
-    assert "mock" in llm_factory._providers
+    assert ProviderType.MOCK in llm_factory._providers
 
 
 @patch("app.dependencies.settings")
@@ -21,8 +22,8 @@ def test_setup_providers_registers_openai_when_key_exists(mock_settings: MagicMo
     llm_factory._providers = {}
     setup_providers()
 
-    assert "openai" in llm_factory._providers
-    provider = llm_factory.get_provider("openai")
+    assert ProviderType.OPENAI in llm_factory._providers
+    provider = llm_factory.get_provider(ProviderType.OPENAI)
     assert isinstance(provider, OpenAIProvider)
     assert provider.api_key == "sk-test-key-123"
 
@@ -35,4 +36,4 @@ def test_setup_providers_skips_openai_when_no_key(mock_settings: MagicMock) -> N
     llm_factory._providers = {}
     setup_providers()
 
-    assert "openai" not in llm_factory._providers
+    assert ProviderType.OPENAI not in llm_factory._providers
