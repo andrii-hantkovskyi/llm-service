@@ -37,8 +37,8 @@ This project uses `uv` for ultra-fast dependency management.
 1.  **Clone the repository:**
 
     ```bash
-    git clone <your-repo-url>
-    cd soc-test-task
+    git clone https://github.com/andrii-hantkovskyi/llm-service.git
+    cd llm-service
     ```
 
 2.  **Install dependencies:**
